@@ -5,9 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const dueDate = new Date();
     dueDate.setDate(today.getDate() + 30);
     document.getElementById('due-date').valueAsDate = dueDate;
-
-    // Initialize listener for live typing on foreign currency target
-    document.getElementById('target-curr-name').addEventListener('input', calculateTotal);
+    
+    // Default currency to INR for the template
+    updateCurrency();
 });
 
 // Logo Upload Logic
@@ -17,16 +17,30 @@ function loadLogo(event) {
         const reader = new FileReader();
         reader.onload = function(e) {
             const imgData = e.target.result;
-            // Show logo in header
             const preview = document.getElementById('logo-preview');
             preview.src = imgData;
             preview.style.display = 'block';
-            document.getElementById('logo-upload').style.display = 'none'; // Hide upload button after
+            document.getElementById('logo-upload').style.display = 'none'; 
             
-            // Set watermark logo
             const wmImg = document.getElementById('watermark-img');
             wmImg.src = imgData;
             wmImg.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// QR Code Upload Logic
+function loadQR(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgData = e.target.result;
+            const preview = document.getElementById('qr-preview');
+            preview.src = imgData;
+            preview.style.display = 'block';
+            document.getElementById('qr-upload').style.display = 'none'; 
         };
         reader.readAsDataURL(file);
     }
@@ -51,7 +65,10 @@ function addItem() {
     const row = document.createElement('tr');
     const sym = document.getElementById('currency-selector').value;
     row.innerHTML = `
-        <td><input type="text" placeholder="Service description..." oninput="calculateTotal()"></td>
+        <td>
+            <input type="text" placeholder="Service / Software Name" style="font-weight: bold;" oninput="calculateTotal()">
+            <textarea class="item-desc" rows="2" placeholder="Detailed technical description..."></textarea>
+        </td>
         <td>
             <select class="frequency">
                 <option value="One-Time">One-Time</option>
@@ -87,20 +104,48 @@ function calculateTotal() {
         subtotal += amount;
     });
 
-    // Calculate Subtotal, Tax, and Grand Total
-    const taxRate = parseFloat(document.getElementById('tax-rate').value) || 0;
-    const taxAmount = subtotal * (taxRate / 100);
-    const grandTotal = subtotal + taxAmount;
+    // Handle Discount
+    const discountAmount = parseFloat(document.getElementById('discount-amount').value) || 0;
+    const displayDiscountRow = document.getElementById('display-discount-row');
+    
+    // Prevent negative subtotal if discount is too high
+    const discountedSubtotal = Math.max(0, subtotal - discountAmount);
 
+    // Show discount visually on print only if a discount exists
+    if(discountAmount > 0) {
+        document.getElementById('display-discount').innerText = discountAmount.toFixed(2);
+        displayDiscountRow.style.display = 'flex';
+    } else {
+        displayDiscountRow.style.display = 'none';
+    }
+
+    // Calculate Tax on the DISCOUNTED subtotal
+    const taxRate = parseFloat(document.getElementById('tax-rate').value) || 0;
+    const taxAmount = discountedSubtotal * (taxRate / 100);
+    const grandTotal = discountedSubtotal + taxAmount;
+
+    // Update UI
     document.getElementById('subtotal').innerText = subtotal.toFixed(2);
     document.getElementById('tax-amount').innerText = taxAmount.toFixed(2);
     document.getElementById('grand-total').innerText = grandTotal.toFixed(2);
+}
 
-    // Foreign Currency Conversion Logic
-    const exchangeRate = parseFloat(document.getElementById('exchange-rate').value) || 1;
-    const targetCurr = document.getElementById('target-curr-name').value;
-    const convertedTotal = grandTotal * exchangeRate;
-    
-    document.getElementById('converted-total').innerText = convertedTotal.toFixed(2);
-    document.getElementById('display-target-curr').innerText = targetCurr;
+//signature upload
+// Digital Signature Upload Logic
+function loadSignature(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgData = e.target.result;
+            const preview = document.getElementById('sig-preview');
+            preview.src = imgData;
+            preview.style.display = 'block';
+            
+            // Hide the upload button and helper text after successful upload
+            document.getElementById('sig-upload').style.display = 'none'; 
+            event.target.nextElementSibling.style.display = 'none'; 
+        };
+        reader.readAsDataURL(file);
+    }
 }

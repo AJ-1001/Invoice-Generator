@@ -19,3 +19,4 @@ A professional, interactive, and fully client-side invoice generator built speci
 1. **Clone the repository:**
    ```bash
    git clone [https://github.com/yourusername/software-invoice-generator.git](https://github.com/yourusername/software-invoice-generator.git)
+2. **Run the index.html file(Live server)**

@@ -52,7 +52,7 @@
                         <option value="$">USD ($)</option>
                         <option value="€">EUR (€)</option>
                         <option value="£">GBP (£)</option>
-                        <option value="₹">INR (₹)</option>
+                        <option value="₹" selected>INR (₹)</option>
                         <option value="¥">JPY (¥)</option>
                     </select>
                 </div>
@@ -71,17 +71,20 @@
         <table id="items-table">
             <thead>
                 <tr>
-                    <th style="width: 35%;">Description of Service / Software</th>
+                    <th style="width: 40%;">Description of Service / Software</th>
                     <th style="width: 15%;">Frequency</th>
                     <th style="width: 10%;">Qty / Hrs</th>
-                    <th style="width: 15%;">Rate</th>
+                    <th style="width: 12%;">Rate</th>
                     <th style="width: 15%;">Amount</th>
-                    <th class="no-print" style="width: 10%;"></th>
+                    <th class="no-print" style="width: 8%;"></th>
                 </tr>
             </thead>
             <tbody id="invoice-items">
                 <tr>
-                    <td><input type="text" value="Custom Software Development" oninput="calculateTotal()"></td>
+                    <td>
+                        <input type="text" value="Custom Software Development" style="font-weight: bold;">
+                        <textarea class="item-desc" rows="2" placeholder="Detailed technical description (e.g., Frontend UI, API Integration...)"></textarea>
+                    </td>
                     <td>
                         <select class="frequency">
                             <option value="One-Time">One-Time</option>
@@ -90,22 +93,8 @@
                         </select>
                     </td>
                     <td><input type="number" class="qty" value="40" oninput="calculateTotal()"></td>
-                    <td><input type="number" class="rate" value="100" oninput="calculateTotal()"></td>
-                    <td><span class="curr-sym">$</span><span class="amount">4000.00</span></td>
-                    <td class="no-print"><button class="btn btn-danger" onclick="removeItem(this)">Remove</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" value="Cloud Hosting & Maintenance" oninput="calculateTotal()"></td>
-                    <td>
-                        <select class="frequency">
-                            <option value="One-Time">One-Time</option>
-                            <option value="Monthly" selected>Monthly</option>
-                            <option value="Yearly">Yearly</option>
-                        </select>
-                    </td>
-                    <td><input type="number" class="qty" value="1" oninput="calculateTotal()"></td>
-                    <td><input type="number" class="rate" value="250" oninput="calculateTotal()"></td>
-                    <td><span class="curr-sym">$</span><span class="amount">250.00</span></td>
+                    <td><input type="number" class="rate" value="1000" oninput="calculateTotal()"></td>
+                    <td><span class="curr-sym">₹</span><span class="amount">40000.00</span></td>
                     <td class="no-print"><button class="btn btn-danger" onclick="removeItem(this)">Remove</button></td>
                 </tr>
             </tbody>
@@ -119,7 +108,15 @@
             <div class="totals-box">
                 <div class="row">
                     <span>Subtotal:</span>
-                    <span><span class="curr-sym">$</span><span id="subtotal">4250.00</span></span>
+                    <span><span class="curr-sym">₹</span><span id="subtotal">40000.00</span></span>
+                </div>
+                <div class="row discount-row no-print">
+                    <span>Discount Amount:</span>
+                    <input type="number" id="discount-amount" value="0" oninput="calculateTotal()">
+                </div>
+                <div class="row" id="display-discount-row" style="color: #e53e3e; display: none;">
+                    <span>Discount:</span>
+                    <span>-<span class="curr-sym">₹</span><span id="display-discount">0.00</span></span>
                 </div>
                 <div class="row no-print">
                     <span>Tax Rate (%):</span>
@@ -127,38 +124,38 @@
                 </div>
                 <div class="row">
                     <span>Tax:</span>
-                    <span><span class="curr-sym">$</span><span id="tax-amount">0.00</span></span>
+                    <span><span class="curr-sym">₹</span><span id="tax-amount">0.00</span></span>
                 </div>
                 <div class="row grand-total">
                     <span>Total Due:</span>
-                    <span><span class="curr-sym">$</span><span id="grand-total">4250.00</span></span>
+                    <span><span class="curr-sym">₹</span><span id="grand-total">40000.00</span></span>
                 </div>
-
-                <!-- Foreign Currency Conversion Section -->
-                <div class="conversion-box">
-                    <div class="row no-print" style="color: #2b6cb0; font-weight: bold;">
-                        Foreign Currency Converter
-                    </div>
-                    <div class="row">
-                        <span>Target Currency:</span>
-                        <input type="text" id="target-curr-name" placeholder="e.g., EUR" value="">
-                    </div>
-                    <div class="row no-print">
-                        <span>Exchange Rate (Multiplier):</span>
-                        <input type="number" id="exchange-rate" value="1" step="0.01" oninput="calculateTotal()">
-                    </div>
-                    <div class="row" style="font-weight: bold; margin-top: 5px;">
-                        <span>Converted Total:</span>
-                        <span><span id="converted-total">0.00</span> <span id="display-target-curr"></span></span>
-                    </div>
-                </div>
-
             </div>
         </div>
 
-        <div class="notes-section">
-            <h3>Payment Terms & Instructions</h3>
-            <textarea rows="5" style="border: none; background: transparent; resize: none; font-size: 14px; color: #4a5568;" placeholder="Net 30 Days.&#10;&#10;Please make wire transfers to:&#10;Bank Name: Tech Bank&#10;Account No: 123456789 | SWIFT: TCHUS33&#10;&#10;Late payments are subject to a 1.5% monthly fee."></textarea>
+        <div class="invoice-footer">
+            <div class="notes-section">
+                <h3>Payment Terms & Instructions</h3>
+                <textarea rows="4" style="border: none; background: transparent; resize: none; font-size: 14px; color: #4a5568;" placeholder="Net 30 Days. Late payments are subject to a 1.5% monthly fee."></textarea>
+                
+                <div class="qr-code-section">
+                    <div style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #3182ce;">Scan to Pay via UPI</div>
+                    <img id="qr-preview" alt="UPI QR Code">
+                    <input type="file" id="qr-upload" class="no-print" accept="image/*" onchange="loadQR(event)">
+                    <div class="no-print" style="font-size: 11px; color: #718096; margin-top: 5px;">Upload your UPI QR Code image</div>
+                </div>
+            </div>
+
+            <div class="signature-section">
+                <input type="text" placeholder="Signatory Name" style="text-align: center; border: none; font-weight: bold; margin-bottom: 5px; background: transparent;">
+                <div class="sig-wrapper">
+                    <img id="sig-preview" alt="Signature">
+                    <input type="file" id="sig-upload" class="no-print" accept="image/*" onchange="loadSignature(event)">
+                    <div class="no-print" style="font-size: 10px; color: #718096; margin-top: 5px;">Upload Signature Image</div>
+                </div>
+                <div class="signature-line"></div>
+                <div style="text-align: center; font-size: 13px; color: #718096; text-transform: uppercase;">Authorized Signature</div>
+            </div>
         </div>
     </div>
 </div>
