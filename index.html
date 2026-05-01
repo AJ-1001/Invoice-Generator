@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Software Invoice Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="invoice-box">
+    <!-- Watermark Background -->
+    <div id="watermark">
+        <img id="watermark-img" style="display: none;" alt="Watermark Logo">
+        <div id="watermark-text">TECH SOLUTIONS LLC</div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="no-print" style="text-align: right; margin-bottom: 25px;">
+            <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        </div>
+
+        <div class="header">
+            <div class="company-details">
+                <div class="logo-container">
+                    <img id="logo-preview" alt="Company Logo">
+                    <input type="file" id="logo-upload" class="no-print" accept="image/*" onchange="loadLogo(event)">
+                    <div class="no-print" style="font-size: 11px; color: #718096; margin-top: -5px;">Upload company logo (Optional)</div>
+                </div>
+                <input type="text" id="company-name" value="TECH SOLUTIONS LLC" oninput="updateWatermark()" style="font-size: 24px; font-weight: bold; border:none; padding:0; margin-bottom:5px; color:#2b6cb0;">
+                <input type="text" placeholder="Website (e.g., www.techsolutions.com)">
+                <textarea rows="3" placeholder="Company Address&#10;City, State, Zip Code&#10;Phone: (555) 123-4567 | Email: billing@techsolutions.com"></textarea>
+            </div>
+            
+            <div class="invoice-details">
+                <h2 style="color: #3182ce; letter-spacing: 2px;">INVOICE</h2>
+                <div class="row">
+                    <label>Invoice #:</label>
+                    <input type="text" value="INV-2026-001">
+                </div>
+                <div class="row">
+                    <label>Date:</label>
+                    <input type="date" id="invoice-date">
+                </div>
+                <div class="row">
+                    <label>Due Date:</label>
+                    <input type="date" id="due-date">
+                </div>
+                <div class="row no-print" style="margin-top: 10px;">
+                    <label>Currency:</label>
+                    <select id="currency-selector" onchange="updateCurrency()">
+                        <option value="$">USD ($)</option>
+                        <option value="€">EUR (€)</option>
+                        <option value="£">GBP (£)</option>
+                        <option value="₹">INR (₹)</option>
+                        <option value="¥">JPY (¥)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 30px; display: flex; justify-content: space-between;">
+            <div style="width: 48%;">
+                <h3>Billed To:</h3>
+                <input type="text" placeholder="Customer / Company Name" style="font-weight: bold; font-size: 16px;">
+                <input type="text" placeholder="Attn: Contact Person">
+                <textarea rows="3" placeholder="Customer Address&#10;City, State, Zip/PIN Code&#10;Country"></textarea>
+            </div>
+        </div>
+
+        <table id="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 35%;">Description of Service / Software</th>
+                    <th style="width: 15%;">Frequency</th>
+                    <th style="width: 10%;">Qty / Hrs</th>
+                    <th style="width: 15%;">Rate</th>
+                    <th style="width: 15%;">Amount</th>
+                    <th class="no-print" style="width: 10%;"></th>
+                </tr>
+            </thead>
+            <tbody id="invoice-items">
+                <tr>
+                    <td><input type="text" value="Custom Software Development" oninput="calculateTotal()"></td>
+                    <td>
+                        <select class="frequency">
+                            <option value="One-Time">One-Time</option>
+                            <option value="Monthly">Monthly</option>
+                            <option value="Yearly">Yearly</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="qty" value="40" oninput="calculateTotal()"></td>
+                    <td><input type="number" class="rate" value="100" oninput="calculateTotal()"></td>
+                    <td><span class="curr-sym">$</span><span class="amount">4000.00</span></td>
+                    <td class="no-print"><button class="btn btn-danger" onclick="removeItem(this)">Remove</button></td>
+                </tr>
+                <tr>
+                    <td><input type="text" value="Cloud Hosting & Maintenance" oninput="calculateTotal()"></td>
+                    <td>
+                        <select class="frequency">
+                            <option value="One-Time">One-Time</option>
+                            <option value="Monthly" selected>Monthly</option>
+                            <option value="Yearly">Yearly</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="qty" value="1" oninput="calculateTotal()"></td>
+                    <td><input type="number" class="rate" value="250" oninput="calculateTotal()"></td>
+                    <td><span class="curr-sym">$</span><span class="amount">250.00</span></td>
+                    <td class="no-print"><button class="btn btn-danger" onclick="removeItem(this)">Remove</button></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="no-print">
+            <button class="btn" style="background-color: #4a5568;" onclick="addItem()">+ Add Line Item</button>
+        </div>
+
+        <div class="totals">
+            <div class="totals-box">
+                <div class="row">
+                    <span>Subtotal:</span>
+                    <span><span class="curr-sym">$</span><span id="subtotal">4250.00</span></span>
+                </div>
+                <div class="row no-print">
+                    <span>Tax Rate (%):</span>
+                    <input type="number" id="tax-rate" value="0" oninput="calculateTotal()">
+                </div>
+                <div class="row">
+                    <span>Tax:</span>
+                    <span><span class="curr-sym">$</span><span id="tax-amount">0.00</span></span>
+                </div>
+                <div class="row grand-total">
+                    <span>Total Due:</span>
+                    <span><span class="curr-sym">$</span><span id="grand-total">4250.00</span></span>
+                </div>
+
+                <!-- Foreign Currency Conversion Section -->
+                <div class="conversion-box">
+                    <div class="row no-print" style="color: #2b6cb0; font-weight: bold;">
+                        Foreign Currency Converter
+                    </div>
+                    <div class="row">
+                        <span>Target Currency:</span>
+                        <input type="text" id="target-curr-name" placeholder="e.g., EUR" value="">
+                    </div>
+                    <div class="row no-print">
+                        <span>Exchange Rate (Multiplier):</span>
+                        <input type="number" id="exchange-rate" value="1" step="0.01" oninput="calculateTotal()">
+                    </div>
+                    <div class="row" style="font-weight: bold; margin-top: 5px;">
+                        <span>Converted Total:</span>
+                        <span><span id="converted-total">0.00</span> <span id="display-target-curr"></span></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="notes-section">
+            <h3>Payment Terms & Instructions</h3>
+            <textarea rows="5" style="border: none; background: transparent; resize: none; font-size: 14px; color: #4a5568;" placeholder="Net 30 Days.&#10;&#10;Please make wire transfers to:&#10;Bank Name: Tech Bank&#10;Account No: 123456789 | SWIFT: TCHUS33&#10;&#10;Late payments are subject to a 1.5% monthly fee."></textarea>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
