@@ -385,6 +385,150 @@ tbody tr:hover { background: #fafbff; }
 .hidden-input { display: none !important; }
 
 /* ========================================================
+   RESPONSIVE — Laptop / Small Desktop  ≤ 1024px
+   ======================================================== */
+@media (max-width: 1024px) {
+    .invoice-box { padding: 36px 40px; margin: 24px auto 48px; }
+    .invoice-meta { width: 200px; }
+    .meta-row input, .meta-row select { width: 120px; }
+}
+
+/* ========================================================
+   RESPONSIVE — Tablet  ≤ 768px
+   ======================================================== */
+@media (max-width: 768px) {
+    body { font-size: 14px; }
+
+    /* Toolbar */
+    .toolbar { padding: 0 16px; height: 48px; }
+    .toolbar-brand { font-size: 14px; gap: 8px; }
+    .brand-icon { font-size: 18px; }
+    .tool-btn { padding: 6px 12px; font-size: 12px; }
+
+    /* Invoice box */
+    .invoice-box { margin: 12px 12px 40px; padding: 28px 24px; border-radius: 10px; }
+
+    /* Header stacks vertically */
+    .invoice-header {
+        flex-direction: column;
+        gap: 24px;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+    }
+    .company-side { width: 100%; }
+    .invoice-meta { width: 100%; }
+    .invoice-badge { text-align: left; font-size: 28px; margin-bottom: 10px; }
+    .meta-row { justify-content: flex-start; }
+    .meta-row label { min-width: 90px; }
+    .meta-row input, .meta-row select { width: 160px; text-align: left; }
+
+    /* Bill to full width */
+    .bill-to { max-width: 100%; }
+
+    /* Table — hide Frequency column on tablet */
+    .col-freq, td:nth-child(2) { display: none; }
+
+    /* Totals full width */
+    .totals-area { justify-content: stretch; }
+    .totals-box { width: 100%; }
+
+    /* Footer stacks */
+    .invoice-footer { flex-direction: column; gap: 24px; }
+    .notes-col { width: 100%; }
+    .sig-col { width: 100%; align-items: flex-start; }
+    .sig-line { width: 200px; }
+}
+
+/* ========================================================
+   RESPONSIVE — Mobile  ≤ 480px
+   ======================================================== */
+@media (max-width: 480px) {
+    /* Toolbar */
+    .toolbar { height: 52px; padding: 0 12px; flex-wrap: wrap; height: auto; padding: 8px 12px; gap: 6px; }
+    .toolbar-brand { font-size: 13px; }
+    .toolbar-actions { gap: 6px; }
+    .tool-btn { padding: 5px 10px; font-size: 11px; }
+
+    /* Invoice box edge-to-edge on small phones */
+    .invoice-box { margin: 8px 0 32px; padding: 20px 16px; border-radius: 0; border-left: none; border-right: none; }
+
+    /* Company name smaller */
+    .company-name-input { font-size: 18px !important; }
+    .invoice-badge { font-size: 24px; }
+
+    /* Meta rows stack label above input */
+    .meta-row { flex-direction: column; align-items: flex-start; gap: 3px; margin-bottom: 8px; }
+    .meta-row input, .meta-row select { width: 100%; text-align: left; }
+
+    /* Bill to */
+    .bill-name { font-size: 15px !important; }
+
+    /* TABLE — card layout on mobile */
+    .table-wrapper { border: none; }
+    table, thead, tbody, th, td, tr { display: block; width: 100%; }
+
+    /* Hide original header row */
+    thead tr { display: none; }
+
+    /* Each row becomes a card */
+    tbody tr {
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 12px;
+        padding: 12px;
+        background: #fafbff;
+        position: relative;
+    }
+    tbody tr:hover { background: #f4f6ff; }
+
+    /* Each cell labeled via data-label */
+    tbody td {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 5px 0;
+        border-bottom: none;
+    }
+    tbody td::before {
+        content: attr(data-label);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        color: var(--ink-muted);
+        min-width: 62px;
+        padding-top: 8px;
+        flex-shrink: 0;
+    }
+    /* Description cell special: stack vertically */
+    tbody td:first-child { flex-direction: column; gap: 4px; }
+    tbody td:first-child::before { padding-top: 0; }
+
+    /* Amount cell */
+    .amount-cell { font-weight: 700; font-size: 15px; color: var(--accent); }
+    .amount-cell::before { color: var(--ink-muted); padding-top: 6px; }
+
+    /* Del button — top-right of card */
+    td.no-print { position: absolute; top: 10px; right: 10px; padding: 0; width: auto; }
+    td.no-print::before { display: none; }
+    .del-btn { margin-top: 0; }
+
+    /* Hide frequency on mobile too */
+    .col-freq, td:nth-child(2) { display: none !important; }
+
+    /* Totals */
+    .totals-box { width: 100%; }
+    .totals-row { padding: 8px 12px; font-size: 13px; }
+    .grand-total-row span:last-child { font-size: 16px; }
+
+    /* Footer */
+    .invoice-footer { gap: 20px; }
+    .sig-line { width: 100%; }
+    .qr-zone { width: 100%; text-align: center; }
+    #qr-preview { margin: 0 auto 6px; display: block; }
+}
+
+/* ========================================================
    PRINT STYLES — clean, tight, no stray whitespace
    ======================================================== */
 @media print {

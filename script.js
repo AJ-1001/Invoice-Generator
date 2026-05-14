@@ -92,20 +92,20 @@ function addItem() {
     const sym = document.getElementById('currency-selector').value;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-        <td>
+        <td data-label="Description">
             <input type="text" class="item-name" placeholder="Service / Product Name" oninput="calculateTotal()">
             <textarea class="item-desc" rows="2" placeholder="Brief description…"></textarea>
         </td>
-        <td>
+        <td data-label="Frequency">
             <select class="frequency">
                 <option value="One-Time">One-Time</option>
                 <option value="Monthly">Monthly</option>
                 <option value="Yearly">Yearly</option>
             </select>
         </td>
-        <td><input type="number" class="qty" value="1" min="0" oninput="calculateTotal()"></td>
-        <td><input type="number" class="rate" value="0" min="0" oninput="calculateTotal()"></td>
-        <td class="amount-cell"><span class="curr-sym">${sym}</span><span class="amount">0.00</span></td>
+        <td data-label="Qty / Hrs"><input type="number" class="qty" value="1" min="0" oninput="calculateTotal()"></td>
+        <td data-label="Rate"><input type="number" class="rate" value="0" min="0" oninput="calculateTotal()"></td>
+        <td class="amount-cell" data-label="Amount"><span class="curr-sym">${sym}</span><span class="amount">0.00</span></td>
         <td class="no-print"><button class="del-btn" onclick="removeItem(this)">✕</button></td>
     `;
     tbody.appendChild(tr);
