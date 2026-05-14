@@ -3,51 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Software Invoice Generator</title>
+    <title>Invoice Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<div class="app-shell no-print">
+    <div class="toolbar">
+        <div class="toolbar-brand">
+            <span class="brand-icon">◈</span>
+            <span>Invoice Studio</span>
+        </div>
+        <div class="toolbar-actions">
+            <button class="tool-btn" onclick="addItem()">+ Add Line</button>
+            <button class="tool-btn primary" onclick="window.print()">⎙ Print / PDF</button>
+        </div>
+    </div>
+</div>
+
 <div class="invoice-box">
-    <!-- Watermark Background -->
+    <!-- Watermark -->
     <div id="watermark">
-        <img id="watermark-img" style="display: none;" alt="Watermark Logo">
-        <div id="watermark-text">TECH SOLUTIONS LLC</div>
+        <img id="watermark-img" style="display:none;" alt="">
+        <div id="watermark-text">TECH SOLUTIONS</div>
     </div>
 
     <div class="content-wrapper">
-        <div class="no-print" style="text-align: right; margin-bottom: 25px;">
-            <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
-        </div>
 
-        <div class="header">
-            <div class="company-details">
-                <div class="logo-container">
-                    <img id="logo-preview" alt="Company Logo">
-                    <input type="file" id="logo-upload" class="no-print" accept="image/*" onchange="loadLogo(event)">
-                    <div class="no-print" style="font-size: 11px; color: #718096; margin-top: -5px;">Upload company logo (Optional)</div>
+        <!-- HEADER -->
+        <div class="invoice-header">
+            <div class="company-side">
+                <div class="logo-zone">
+                    <img id="logo-preview" alt="Logo">
+                    <label for="logo-upload" class="upload-label no-print" id="logo-label">
+                        <span class="upload-icon">+</span>
+                        <span>Upload Logo</span>
+                    </label>
+                    <input type="file" id="logo-upload" class="hidden-input" accept="image/*" onchange="loadLogo(event)">
                 </div>
-                <input type="text" id="company-name" value="TECH SOLUTIONS LLC" oninput="updateWatermark()" style="font-size: 24px; font-weight: bold; border:none; padding:0; margin-bottom:5px; color:#2b6cb0;">
-                <input type="text" placeholder="Website (e.g., www.techsolutions.com)">
-                <textarea rows="3" placeholder="Company Address&#10;City, State, Zip Code&#10;Phone: (555) 123-4567 | Email: billing@techsolutions.com"></textarea>
+                <input class="company-name-input" type="text" id="company-name" value="TECH SOLUTIONS LLC" oninput="updateWatermark()">
+                <input type="text" class="subtle-input" placeholder="Website · e.g. www.yourcompany.com">
+                <textarea class="subtle-input" rows="3" placeholder="123 Business Street, Suite 400&#10;City, State — ZIP&#10;✉ billing@company.com  ☎ (555) 000-0000"></textarea>
             </div>
-            
-            <div class="invoice-details">
-                <h2 style="color: #3182ce; letter-spacing: 2px;">INVOICE</h2>
-                <div class="row">
-                    <label>Invoice #:</label>
+
+            <div class="invoice-meta">
+                <div class="invoice-badge">INVOICE</div>
+                <div class="meta-row">
+                    <label>Invoice #</label>
                     <input type="text" value="INV-2026-001">
                 </div>
-                <div class="row">
-                    <label>Date:</label>
+                <div class="meta-row">
+                    <label>Date</label>
                     <input type="date" id="invoice-date">
                 </div>
-                <div class="row">
-                    <label>Due Date:</label>
+                <div class="meta-row">
+                    <label>Due Date</label>
                     <input type="date" id="due-date">
                 </div>
-                <div class="row no-print" style="margin-top: 10px;">
-                    <label>Currency:</label>
+                <div class="meta-row no-print">
+                    <label>Currency</label>
                     <select id="currency-selector" onchange="updateCurrency()">
                         <option value="$">USD ($)</option>
                         <option value="€">EUR (€)</option>
@@ -59,106 +75,123 @@
             </div>
         </div>
 
-        <div style="margin-bottom: 30px; display: flex; justify-content: space-between;">
-            <div style="width: 48%;">
-                <h3>Billed To:</h3>
-                <input type="text" placeholder="Customer / Company Name" style="font-weight: bold; font-size: 16px;">
-                <input type="text" placeholder="Attn: Contact Person">
-                <textarea rows="3" placeholder="Customer Address&#10;City, State, Zip/PIN Code&#10;Country"></textarea>
+        <!-- BILLED TO -->
+        <div class="bill-section">
+            <div class="bill-to">
+                <div class="section-label">Billed To</div>
+                <input type="text" class="bill-name" placeholder="Client / Company Name">
+                <input type="text" class="subtle-input" placeholder="Attn: Contact Person">
+                <textarea class="subtle-input" rows="3" placeholder="Street Address&#10;City, State, ZIP / PIN&#10;Country"></textarea>
             </div>
         </div>
 
-        <table id="items-table">
-            <thead>
-                <tr>
-                    <th style="width: 40%;">Description of Service / Software</th>
-                    <th style="width: 15%;">Frequency</th>
-                    <th style="width: 10%;">Qty / Hrs</th>
-                    <th style="width: 12%;">Rate</th>
-                    <th style="width: 15%;">Amount</th>
-                    <th class="no-print" style="width: 8%;"></th>
-                </tr>
-            </thead>
-            <tbody id="invoice-items">
-                <tr>
-                    <td>
-                        <input type="text" value="Custom Software Development" style="font-weight: bold;">
-                        <textarea class="item-desc" rows="2" placeholder="Detailed technical description (e.g., Frontend UI, API Integration...)"></textarea>
-                    </td>
-                    <td>
-                        <select class="frequency">
-                            <option value="One-Time">One-Time</option>
-                            <option value="Monthly">Monthly</option>
-                            <option value="Yearly">Yearly</option>
-                        </select>
-                    </td>
-                    <td><input type="number" class="qty" value="40" oninput="calculateTotal()"></td>
-                    <td><input type="number" class="rate" value="1000" oninput="calculateTotal()"></td>
-                    <td><span class="curr-sym">₹</span><span class="amount">40000.00</span></td>
-                    <td class="no-print"><button class="btn btn-danger" onclick="removeItem(this)">Remove</button></td>
-                </tr>
-            </tbody>
-        </table>
-        
-        <div class="no-print">
-            <button class="btn" style="background-color: #4a5568;" onclick="addItem()">+ Add Line Item</button>
+        <!-- LINE ITEMS -->
+        <div class="table-wrapper">
+            <table id="items-table">
+                <thead>
+                    <tr>
+                        <th class="col-desc">Description</th>
+                        <th class="col-freq">Frequency</th>
+                        <th class="col-qty">Qty / Hrs</th>
+                        <th class="col-rate">Rate</th>
+                        <th class="col-amt">Amount</th>
+                        <th class="col-del no-print"></th>
+                    </tr>
+                </thead>
+                <tbody id="invoice-items">
+                    <tr>
+                        <td>
+                            <input type="text" value="Custom Software Development" class="item-name">
+                            <textarea class="item-desc" rows="2" placeholder="Brief description of the deliverable…"></textarea>
+                        </td>
+                        <td>
+                            <select class="frequency">
+                                <option value="One-Time">One-Time</option>
+                                <option value="Monthly">Monthly</option>
+                                <option value="Yearly">Yearly</option>
+                            </select>
+                        </td>
+                        <td><input type="number" class="qty" value="40" oninput="calculateTotal()"></td>
+                        <td><input type="number" class="rate" value="1000" oninput="calculateTotal()"></td>
+                        <td class="amount-cell"><span class="curr-sym">₹</span><span class="amount">40,000.00</span></td>
+                        <td class="no-print"><button class="del-btn" onclick="removeItem(this)">✕</button></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <div class="totals">
+        <div class="no-print add-row-wrap">
+            <button class="add-line-btn" onclick="addItem()">+ Add Line Item</button>
+        </div>
+
+        <!-- TOTALS -->
+        <div class="totals-area">
             <div class="totals-box">
-                <div class="row">
-                    <span>Subtotal:</span>
-                    <span><span class="curr-sym">₹</span><span id="subtotal">40000.00</span></span>
+                <div class="totals-row">
+                    <span>Subtotal</span>
+                    <span><span class="curr-sym">₹</span><span id="subtotal">40,000.00</span></span>
                 </div>
-                <div class="row discount-row no-print">
-                    <span>Discount Amount:</span>
-                    <input type="number" id="discount-amount" value="0" oninput="calculateTotal()">
+                <div class="totals-row no-print">
+                    <span>Tax Rate (%)</span>
+                    <input type="number" id="tax-rate" value="0" oninput="calculateTotal()" placeholder="0">
                 </div>
-                <div class="row" id="display-discount-row" style="color: #e53e3e; display: none;">
-                    <span>Discount:</span>
-                    <span>-<span class="curr-sym">₹</span><span id="display-discount">0.00</span></span>
-                </div>
-                <div class="row no-print">
-                    <span>Tax Rate (%):</span>
-                    <input type="number" id="tax-rate" value="0" oninput="calculateTotal()">
-                </div>
-                <div class="row">
-                    <span>Tax:</span>
+                <div class="totals-row" id="tax-display-row">
+                    <span>Tax</span>
                     <span><span class="curr-sym">₹</span><span id="tax-amount">0.00</span></span>
                 </div>
-                <div class="row grand-total">
-                    <span>Total Due:</span>
-                    <span><span class="curr-sym">₹</span><span id="grand-total">40000.00</span></span>
+                <div class="totals-row subtotal-after-tax-row" id="after-tax-row" style="display:none;">
+                    <span>Amount After Tax</span>
+                    <span><span class="curr-sym">₹</span><span id="after-tax-amount">0.00</span></span>
+                </div>
+                <div class="totals-row no-print discount-input-row">
+                    <span>Discount (flat)</span>
+                    <input type="number" id="discount-amount" value="0" oninput="calculateTotal()" placeholder="0">
+                </div>
+                <div class="totals-row discount-display-row" id="display-discount-row" style="display:none;">
+                    <span>Discount</span>
+                    <span class="discount-val">− <span class="curr-sym">₹</span><span id="display-discount">0.00</span></span>
+                </div>
+                <div class="totals-row grand-total-row">
+                    <span>Total Due</span>
+                    <span><span class="curr-sym">₹</span><span id="grand-total">40,000.00</span></span>
                 </div>
             </div>
         </div>
 
+        <!-- FOOTER: Notes + QR + Signature -->
         <div class="invoice-footer">
-            <div class="notes-section">
-                <h3>Payment Terms & Instructions</h3>
-                <textarea rows="4" style="border: none; background: transparent; resize: none; font-size: 14px; color: #4a5568;" placeholder="Net 30 Days. Late payments are subject to a 1.5% monthly fee."></textarea>
-                
-                <div class="qr-code-section">
-                    <div style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #3182ce;">Scan to Pay via UPI</div>
+            <div class="notes-col">
+                <div class="section-label">Payment Terms & Notes</div>
+                <textarea class="notes-area" rows="4" placeholder="Net 30 Days. Late payments subject to 1.5% monthly interest.&#10;Bank: · Account No: · IFSC/SWIFT:"></textarea>
+
+                <div class="qr-zone">
+                    <div class="qr-label">Scan to Pay via UPI</div>
                     <img id="qr-preview" alt="UPI QR Code">
-                    <input type="file" id="qr-upload" class="no-print" accept="image/*" onchange="loadQR(event)">
-                    <div class="no-print" style="font-size: 11px; color: #718096; margin-top: 5px;">Upload your UPI QR Code image</div>
+                    <label for="qr-upload" class="upload-label no-print" id="qr-label">
+                        <span class="upload-icon">+</span>
+                        <span>Upload QR Code</span>
+                    </label>
+                    <input type="file" id="qr-upload" class="hidden-input no-print" accept="image/*" onchange="loadQR(event)">
                 </div>
             </div>
 
-            <div class="signature-section">
-                <input type="text" placeholder="Signatory Name" style="text-align: center; border: none; font-weight: bold; margin-bottom: 5px; background: transparent;">
-                <div class="sig-wrapper">
+            <div class="sig-col">
+                <input type="text" class="sig-name" placeholder="Authorized Signatory Name">
+                <div class="sig-image-wrap">
                     <img id="sig-preview" alt="Signature">
-                    <input type="file" id="sig-upload" class="no-print" accept="image/*" onchange="loadSignature(event)">
-                    <div class="no-print" style="font-size: 10px; color: #718096; margin-top: 5px;">Upload Signature Image</div>
+                    <label for="sig-upload" class="upload-label no-print" id="sig-label">
+                        <span class="upload-icon">+</span>
+                        <span>Upload Signature</span>
+                    </label>
+                    <input type="file" id="sig-upload" class="hidden-input no-print" accept="image/*" onchange="loadSignature(event)">
                 </div>
-                <div class="signature-line"></div>
-                <div style="text-align: center; font-size: 13px; color: #718096; text-transform: uppercase;">Authorized Signature</div>
+                <div class="sig-line"></div>
+                <div class="sig-caption">Authorized Signature</div>
             </div>
         </div>
-    </div>
-</div>
+
+    </div><!-- /content-wrapper -->
+</div><!-- /invoice-box -->
 
 <script src="script.js"></script>
 </body>
